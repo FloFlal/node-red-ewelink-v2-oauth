@@ -1,0 +1,58 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ewelink-set-status',{
+        category: 'eWeLink V2 OAuth',
+        color: '#1890ff',
+        defaults: {
+            name: {value:""},
+            auth: {value:"", type:"ewelink-auth"},
+            deviceid: {value: ""},
+            deviceidType: {value: "str"},
+            params: {value: ""},
+            paramsType: {value: "json"}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-power-off",
+        align: 'right',
+        paletteLabel: function () {
+          return 'Set Status';
+        },
+        label: function() {
+            return this.name || "Set Status";
+        },
+        oneditprepare: function() {
+            $("#node-input-params").typedInput({
+                type:"json",
+                types:["json","msg","str"],
+                typeField: "#node-input-paramsType"
+            });
+
+            $("#node-input-deviceid").typedInput({
+                type:"str",
+                types:["str","msg"],
+                typeField: "#node-input-deviceidType"
+            });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ewelink-set-status">
+	<div class="form-row">
+	    <label for="node-input-name"><i class="fa fa-user"></i> Name</label>
+	    <input type="text" id="node-input-name">
+	</div>
+    <div class="form-row">
+        <label for="node-input-auth"><i class="fa fa-key"></i> Connection</label>
+        <input type="text" id="node-input-auth">
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceid"><i class="fa fa-microchip"></i> Device ID</label>
+        <input type="text" id="node-input-deviceid">
+        <input type="hidden" id="node-input-deviceidType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-params"><i class="fa fa-sourcetree"></i> Params</label>
+        <input type="text" id="node-input-params">
+        <input type="hidden" id="node-input-paramsType">
+    </div>
+</script>

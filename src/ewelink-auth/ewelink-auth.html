@@ -1,0 +1,127 @@
+<script type="text/javascript">
+(function() {
+    RED.nodes.registerType('ewelink-auth', {
+        category: 'config',
+        defaults: {
+            displayName: { value: "" },
+            redirectUrl: { value: ""}
+        },
+        credentials: {
+            displayName: { value: "" },
+            appId: { type: "password" },
+            appSecret: { type: "password" },
+            redirectUrl: { value: ""}
+        },
+        label: function() {
+            return this.displayName || 'eWeLink OAuth2';
+        },
+        exportable: false,
+        oneditprepare: function() {
+            var id = this.id;
+            var pathname = document.location.pathname;
+            if (pathname.slice(-1) != "/") {
+                pathname += "/";
+            }
+            
+            redirectUrl = location.protocol + "//" +
+                       location.hostname +
+                       (location.port?":"+location.port:"")+
+                       pathname + "ewelink-auth/auth/callback";
+
+
+            // Handle the fact that the link to perform the authorization is enable or disable
+            function updateEwelinkAuthButton() {
+                var v1 = $("#node-config-input-appId").val();
+                var v2 = $("#node-config-input-appSecret").val();
+                $("#node-config-start-auth").toggleClass("disabled",(v1.length === 0 || v2.length === 0));
+            }
+            $("#node-config-input-appId").on('change keydown paste input',updateEwelinkAuthButton);
+            $("#node-config-input-appSecret").on('change keydown paste input',updateEwelinkAuthButton);
+
+
+            // function to hide the appId appSecret screen and show the configured screen
+            function updateEwelinkDisplayName(dn) {
+                $("#node-config-ewelink-client-keys").hide();
+                $("#node-config-ewelink").show();
+                $("#node-config-input-displayName").val(dn);
+                $("#node-config-ewelink-displayName").html(dn);
+            }
+
+            function pollEwelinkCredentials() {
+                $.getJSON('credentials/ewelink-auth/'+id,function(data) {
+                    if (data.displayName) {
+                        $("#node-config-dialog-ok").button("enable");
+                        updateEwelinkDisplayName(data.displayName);
+                        delete window.ewelinkConfigNodeIntervalId;
+                    } else {
+                        window.ewelinkConfigNodeIntervalId = window.setTimeout(pollEwelinkCredentials,2000);
+                    }
+                });
+             }
+
+            updateEwelinkAuthButton();
+
+            if (this.displayName) {
+                updateEwelinkDisplayName(this.displayName);
+            } else {
+                $("#node-config-ewelink-client-keys").show();
+                $("#node-config-ewelink").hide();
+                $("#node-config-dialog-ok").button("disable");
+            }
+
+            $("#node-config-start-auth").click(function() {
+                var appId = $("#node-config-input-appId").val();
+                var appSecret = $("#node-config-input-appSecret").val();
+                if (appId === "" || appSecret === "") {
+                    return;
+                } else {
+                    var redirectUrl = $("#node-config-input-redirectUrl").val();
+                    var url = 'ewelink-auth/auth?id='+id+'&appId='+appId+"&appSecret="+appSecret+"&redirectUrl="+encodeURIComponent(redirectUrl);
+                    //$(this).attr("href",url);
+                    window.open(url, '_blank');
+                    window.ewelinkConfigNodeIntervalId = window.setTimeout(pollEwelinkCredentials,2000);
+                }
+            });
+        },
+        oneditsave: function() {
+            if (window.ewelinkConfigNodeIntervalId) {
+                window.clearTimeout(window.ewelinkConfigNodeIntervalId);
+                delete window.ewelinkConfigNodeIntervalId;
+            }
+        },
+        oneditcancel: function() {
+            if (window.ewelinkConfigNodeIntervalId) {
+                window.clearTimeout(window.ewelinkConfigNodeIntervalId);
+                delete window.ewelinkConfigNodeIntervalId;
+            }
+        }
+    });
+})();
+</script>
+
+<script type="text/x-red" data-template-name="ewelink-auth">
+    <div id="node-config-ewelink-client-keys">
+        <div class="form-row">
+            <label for="node-config-input-appId"><i class="fa fa-user"></i> Application ID (APP_ID)</label>
+            <input type="password" id="node-config-input-appId">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-appSecret"><i class="fa fa-key"></i> Application Secret (APP_SECRET)</label>
+            <input type="password" id="node-config-input-appSecret">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-redirectUrl"><i class="fa fa-fw fa-list"></i> Redirect URL</label>
+            <input type="text" id="node-config-input-redirectUrl">
+        </div>
+        <div class="form-row">
+           <label>&nbsp;</label>
+           <button id="node-config-start-auth">Start Authentication</button>
+        </div>
+    </div>
+    <div id="node-config-ewelink">
+        <div class="form-row">
+            <label for="node-config-input-displayName">Name</label>
+            <input id="node-config-input-displayName">
+        </div>
+    </div>
+</script>

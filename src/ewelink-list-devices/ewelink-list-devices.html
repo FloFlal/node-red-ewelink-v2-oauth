@@ -1,0 +1,30 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ewelink-list-devices',{
+        category: 'eWeLink V2 OAuth',
+        color: '#1890ff',
+        defaults: {
+            name: {value:""},
+            auth: {value:"", type:"ewelink-auth"}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-list",
+        paletteLabel: function () {
+          return 'List Devices';
+        },
+        label: function() {
+            return this.name || "List Devices";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ewelink-list-devices">
+	<div class="form-row">
+	    <label for="node-input-name"><i class="fa fa-user"></i> Name</label>
+	    <input type="text" id="node-input-name">
+	</div>
+    <div class="form-row">
+        <label for="node-input-auth"><i class="fa fa-key"></i> Connection</label>
+        <input type="text" id="node-input-auth">
+    </div>
+</script>

@@ -1,0 +1,43 @@
+{
+    "name": "@floflal/node-red-ewelink-v2-oauth",
+    "version": "0.0.1",
+    "description": "Node-RED to manage ewelink",
+    "scripts": {
+        "test": "nyc --reporter=html --reporter=text mocha"
+    },
+    "keywords": [
+        "node-red",
+        "ewelink"
+    ],
+    "author": {
+        "name": "Florian Chambon",
+        "email": "florian.chambon.zz@gmail.com"
+    },
+    "license": "MIT",
+    "node-red": {
+        "nodes": {
+            "ewelink-auth": "src/ewelink-auth/ewelink-auth.js",
+            "ewelink-list-devices": "src/ewelink-list-devices/ewelink-list-devices.js",
+            "ewelink-set-status": "src/ewelink-set-status/ewelink-set-status.js",
+            "ewelink-status-device": "src/ewelink-status-device/ewelink-status-device.js",
+            "ewelink-home": "src/ewelink-home/ewelink-home.js"
+        }
+    },
+    "dependencies": {
+        "crypto": "^1.0.1",
+        "ewelink-api-next": "^1.0.3",
+        "url": "^0.11.3"
+    },
+    "devDependencies": {
+        "chai": "^4.2.0",
+        "chai-as-promised": "^7.1.1",
+        "chai-spies": "^1.0.0",
+        "coveralls": "^3.0.9",
+        "mocha": "^6.2.2",
+        "mocha-lcov-reporter": "^1.3.0",
+        "node-red": "^1.0.3",
+        "node-red-node-test-helper": "^0.2.3",
+        "nyc": "^14.1.1",
+        "sinon": "^7.5.0"
+    }
+}

@@ -1,2 +1,5 @@
-# node-red-ewelink-v2-oauth
-An impelementation of nodes to connect to eWeLink V2 API thru OAuth and personal API key and secrets
+## README
+
+Using the library [eWeLink API Next](https://github.com/nocmt/ewelink-api-next) which is based on the [Official API](https://coolkit-technologies.github.io/eWeLink-API/#/en/PlatformOverview).
+
+### Node Red eWeLink V2
