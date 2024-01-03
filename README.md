@@ -10,7 +10,7 @@ Using the library [eWeLink API Next](https://github.com/nocmt/ewelink-api-next) 
 
 ### Documentation
 
-Full documentation here: (in progress) [/docs/index.md](https://github.com/FloFlal/node-red-ewelink-v2-oauth/blob/1fa97bad4c02f6fb0daa6336ae2c8a89862b3d43/docs/index.md)
+Full documentation here: (in progress) [/docs/index.md](https://github.com/FloFlal/node-red-ewelink-v2-oauth/blob/main/docs/index.md)
 
 ### Node Red eWeLink V2
 
