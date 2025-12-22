@@ -31,13 +31,16 @@ describe('eWeLink util tests', () => {
 	      { id: 'n1', type: 'ewelink-auth' }
 	    ];
 
+		const defaultDate = Date.now() + (24*60*60*1000*29);
+
 	    const cred = {
 	    	n1: {
 	    		displayName: 'displayName',
 	    		appId: 'appId',
 	    		appSecret: 'appSecret',
 	    		region: 'eu',
-	    		atExpiredTime: Date.now() + (24*60*60*1000*29),
+	    		atExpiredTime: defaultDate,
+	    		rtExpiredTime: defaultDate,
 	    		at: 'atToken',
 	    		rt: 'rtToken'
 	    	}
@@ -54,6 +57,8 @@ describe('eWeLink util tests', () => {
 			if (resp.region !== 'eu') throw new Error("The region property is not OK");
 			if (resp.at !== 'atToken') throw new Error("The at property is not OK");
 			if (resp.rt !== 'rtToken') throw new Error("The rt property is not OK");
+			if (resp.atExpiredTime !== defaultDate) throw new Error("The atExpiredTime property is not OK");
+			if (resp.rtExpiredTime !== defaultDate) throw new Error("The rtExpiredTime property is not OK");
 
 			done();
 	    });

@@ -82,6 +82,8 @@ module.exports = {
 
             client.at = credentials.at;
             client.rt = credentials.rt;
+            client.atExpiredTime = credentials.atExpiredTime;
+            client.rtExpiredTime = credentials.rtExpiredTime;
 
             return client;
         } else {
