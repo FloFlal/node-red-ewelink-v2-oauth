@@ -29,7 +29,7 @@
         "url": "^0.11.3"
     },
     "devDependencies": {
-        "chai": "^4.2.0",
+        "chai": "^6.0.0",
         "chai-as-promised": "^7.1.1",
         "chai-spies": "^1.0.0",
         "coveralls": "^3.0.9",
