@@ -12,7 +12,7 @@ module.exports = function(RED) {
             send = send || function() { node.send.apply(node,arguments) }
 
             ewelinkUtil.handleEwelinkResponse(RED, node.auth, msg, send, client => {
-                return client.device.getAllThings();
+                return client.device.getAllThingsAllPages();
             });
 
             if(done) {
