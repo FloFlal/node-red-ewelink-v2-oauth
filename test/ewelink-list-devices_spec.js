@@ -75,9 +75,9 @@ describe('eWeLink List Devices tests', () => {
 	});
 
 	it('Should send the error occured during the call to ewelink', done => {
-		// override the device.getAllThings method of the client
-		const device = { getAllThings: () => { }};
-		const deviceStub = sinon.stub(device, 'getAllThings').callsFake(() => Promise.reject('My Nasty Error'));
+		// override the device.getAllThingsAllPages method of the client
+		const device = { getAllThingsAllPages: () => { }};
+		const deviceStub = sinon.stub(device, 'getAllThingsAllPages').callsFake(() => Promise.reject('My Nasty Error'));
 
 		// override the devce value of the clinet
   		const client = { device: {}, appId: 'something' };
@@ -117,9 +117,9 @@ describe('eWeLink List Devices tests', () => {
 	});
 
 	it('Should send back eWeLink errors in the output', done => {
-		// override the device.getAllThings method of the client
-		const device = { getAllThings: () => { }};
-		const deviceStub = sinon.stub(device, 'getAllThings').callsFake(() => Promise.resolve({
+		// override the device.getAllThingsAllPages method of the client
+		const device = { getAllThingsAllPages: () => { }};
+		const deviceStub = sinon.stub(device, 'getAllThingsAllPages').callsFake(() => Promise.resolve({
 			error: 1,
 			data: null,
 			msg: "My Nasty eWeLink Error"
@@ -163,9 +163,9 @@ describe('eWeLink List Devices tests', () => {
 	});
 
 	it('Should send the data in case of correct answer', done => {
-		// override the device.getAllThings method of the client
-		const device = { getAllThings: () => { }};
-		const deviceStub = sinon.stub(device, 'getAllThings').callsFake(() => Promise.resolve({
+		// override the device.getAllThingsAllPages method of the client
+		const device = { getAllThingsAllPages: () => { }};
+		const deviceStub = sinon.stub(device, 'getAllThingsAllPages').callsFake(() => Promise.resolve({
 			error: 0,
 			data: {
 				familly: 'familly value !'
