@@ -2,6 +2,10 @@
     "name": "@floflal/node-red-ewelink-v2-oauth",
     "version": "0.0.3",
     "description": "Node-RED to manage ewelink",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/FloFlal/node-red-ewelink-v2-oauth"
+    }
     "scripts": {
         "test": "nyc --reporter=html --reporter=text mocha"
     },
