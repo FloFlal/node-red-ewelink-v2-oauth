@@ -1,0 +1,157 @@
+[
+    {
+        "id": "b41a042bf7f032a8",
+        "type": "tab",
+        "label": "Example Flow",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "25b1fa15a41fa7f0",
+        "type": "ewelink-list-devices",
+        "z": "b41a042bf7f032a8",
+        "name": "",
+        "auth": "",
+        "x": 450,
+        "y": 280,
+        "wires": [
+            [
+                "95cb848c9db9bb0b"
+            ]
+        ]
+    },
+    {
+        "id": "fd4f8209a1b37de1",
+        "type": "inject",
+        "z": "b41a042bf7f032a8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 280,
+        "wires": [
+            [
+                "25b1fa15a41fa7f0"
+            ]
+        ]
+    },
+    {
+        "id": "95cb848c9db9bb0b",
+        "type": "debug",
+        "z": "b41a042bf7f032a8",
+        "name": "debug 43",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "01ba738faaaa4ad4",
+        "type": "ewelink-status-device",
+        "z": "b41a042bf7f032a8",
+        "name": "",
+        "auth": "",
+        "deviceid": "100132f66a",
+        "deviceidType": "str",
+        "x": 440,
+        "y": 400,
+        "wires": [
+            [
+                "95cb848c9db9bb0b"
+            ]
+        ]
+    },
+    {
+        "id": "97b30736261f4c85",
+        "type": "ewelink-home",
+        "z": "b41a042bf7f032a8",
+        "name": "",
+        "auth": "",
+        "x": 450,
+        "y": 200,
+        "wires": [
+            [
+                "95cb848c9db9bb0b"
+            ]
+        ]
+    },
+    {
+        "id": "2dae96f607f16ec5",
+        "type": "inject",
+        "z": "b41a042bf7f032a8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "97b30736261f4c85"
+            ]
+        ]
+    },
+    {
+        "id": "a1375dfdffd1025a",
+        "type": "inject",
+        "z": "b41a042bf7f032a8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 400,
+        "wires": [
+            [
+                "01ba738faaaa4ad4"
+            ]
+        ]
+    }
+]
