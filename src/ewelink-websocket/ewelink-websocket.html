@@ -1,0 +1,39 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ewelink-websocket',{
+        category: 'eWeLink V2 OAuth',
+        color: '#1890ff',
+        defaults: {
+            name: {value:""},
+            auth: {value:"", type: "ewelink-auth"},
+            deviceId: {value:""},
+            apiKey: {value:""},
+        },
+        outputs: 1,
+        paletteLabel: function () {
+          return 'Event Messages';
+        },
+        icon: "font-awesome/fa-rss",
+        label: function() {
+            return this.name || "Event Messages";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ewelink-websocket">
+	<div class="form-row">
+	    <label for="node-input-name"><i class="fa fa-user"></i> Name</label>
+	    <input type="text" id="node-input-name">
+	</div>
+    <div class="form-row">
+        <label for="node-input-auth"><i class="fa fa-key"></i> Connection</label>
+        <input type="text" id="node-input-auth">
+    </div>
+    <div class="form-row">
+        <label for="node-input-deviceid"><i class="fa fa-microchip"></i> Device ID</label>
+        <input type="text" id="node-input-deviceid">
+    </div>
+    <div class="form-row">
+        <label for="node-input-apikey"><i class="fa fa-key"></i> Api Key</label>
+        <input type="text" id="node-input-apikey">
+    </div>
+</script>

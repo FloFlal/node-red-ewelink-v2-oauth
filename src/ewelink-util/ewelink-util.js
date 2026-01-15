@@ -1,4 +1,7 @@
+ 
+
 module.exports = {
+
     handlePromiseCall(callPromise, msg, send) {
         callPromise.then(resp => {
             if(resp.error === 0) {
@@ -19,7 +22,7 @@ module.exports = {
 
 	handleEwelinkResponse(RED, nodeAuth, msg, send, callback) {
 		const client = nodeAuth.getClient();
-
+        
         if(client && client.appId) {
 
             const currentTime = (new Date()).getTime();
@@ -43,7 +46,6 @@ module.exports = {
                         client.atExpiredTime = nodeAuth.credentials.atExpiredTime;
 
                         const callPromise = callback(client);
-
                         this.handlePromiseCall(callPromise, msg, send);
                     } else {
                         console.log("Error during refresh of the token with code [" + resp.error + "]: " + resp.msg);
@@ -63,6 +65,16 @@ module.exports = {
         }
 	},
 
+    getWssClient(credentials) {
+        const ewelinkApi = require('ewelink-api-next').default;
+
+        return new ewelinkApi.Ws({
+            appId: credentials.appId,
+            appSecret: credentials.appSecret,
+            region: credentials.region
+        });
+    },
+    
     getBasicClient(credentials) {
         const ewelinkApi = require('ewelink-api-next').default;
 

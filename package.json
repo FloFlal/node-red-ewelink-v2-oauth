@@ -1,6 +1,6 @@
 {
     "name": "@floflal/node-red-ewelink-v2-oauth",
-    "version": "0.0.4",
+    "version": "0.1.0",
     "description": "Node-RED to manage ewelink",
     "repository": {
         "type": "git",
@@ -28,7 +28,8 @@
             "ewelink-list-devices": "src/ewelink-list-devices/ewelink-list-devices.js",
             "ewelink-set-status": "src/ewelink-set-status/ewelink-set-status.js",
             "ewelink-status-device": "src/ewelink-status-device/ewelink-status-device.js",
-            "ewelink-home": "src/ewelink-home/ewelink-home.js"
+            "ewelink-home": "src/ewelink-home/ewelink-home.js",
+            "ewelink-websocket": "src/ewelink-websocket/ewelink-websocket.js"
         }
     },
     "dependencies": {
