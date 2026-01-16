@@ -210,7 +210,7 @@ describe('eWeLink Websocket tests', () => {
                 done();
             });
 
-            connect.fakeMessage({data: messageSent});
+            connect.fakeMessage({data: JSON.stringify(messageSent)});
 
         })
     });
@@ -254,7 +254,6 @@ describe('eWeLink Websocket tests', () => {
 
         helper.load([authNode, websocketNode], flow, () => {
             const n3 = helper.getNode('n3');
-            const messageSent = 'pong';
 
             n3.on('input', msg => {
                 msg.should.not.have.a.property('payload');
@@ -311,7 +310,6 @@ describe('eWeLink Websocket tests', () => {
 
         helper.load([authNode, websocketNode], flow, () => {
             const n3 = helper.getNode('n3');
-            const messageSent = 'pong';
 
             n3.on('input', msg => {
                 msg.should.not.have.a.property('payload');
@@ -369,7 +367,6 @@ describe('eWeLink Websocket tests', () => {
         helper.load([authNode, websocketNode], flow, () => {
             const n2 = helper.getNode('n2');
             const n3 = helper.getNode('n3');
-            const messageSent = 'pong';
 
             n3.on('input', msg => {
                 msg.should.not.have.a.property('payload');
