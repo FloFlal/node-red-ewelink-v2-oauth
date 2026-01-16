@@ -5,16 +5,32 @@
         defaults: {
             name: {value:""},
             auth: {value:"", type: "ewelink-auth"},
-            deviceId: {value:""},
-            apiKey: {value:""},
+            deviceid: {value:""},
+            deviceidType: {value: "str"},
+            apikey: {value:""},
+            apikeyType: {value: "str"},
         },
         outputs: 1,
+        icon: "font-awesome/fa-rss",
+        align: 'right',
         paletteLabel: function () {
           return 'Event Messages';
         },
-        icon: "font-awesome/fa-rss",
         label: function() {
             return this.name || "Event Messages";
+        },
+        oneditprepare: function() {
+            $("#node-input-apikey").typedInput({
+                type:"str",
+                types:["str"],
+                typeField: "#node-input-apikeyType"
+            });
+
+            $("#node-input-deviceid").typedInput({
+                type:"str",
+                types:["str"],
+                typeField: "#node-input-deviceidType"
+            });
         }
     });
 </script>
@@ -31,9 +47,11 @@
     <div class="form-row">
         <label for="node-input-deviceid"><i class="fa fa-microchip"></i> Device ID</label>
         <input type="text" id="node-input-deviceid">
+        <input type="hidden" id="node-input-deviceidType">
     </div>
     <div class="form-row">
         <label for="node-input-apikey"><i class="fa fa-key"></i> Api Key</label>
         <input type="text" id="node-input-apikey">
+        <input type="hidden" id="node-input-apikeyType">
     </div>
 </script>

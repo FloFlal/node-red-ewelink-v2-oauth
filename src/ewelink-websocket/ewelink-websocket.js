@@ -20,7 +20,7 @@ module.exports = function(RED) {
             },
             (_ws) => {
                 ws = _ws;
-                node.log('[' + new Date() + '] - Connected to eWeLink WS: ' + ws.url);
+                console.log('[' + new Date() + '] - Connected to eWeLink WS: ' + ws.url);
                 node.status({
                     fill: 'yellow',
                     shape: 'ring',
@@ -28,7 +28,7 @@ module.exports = function(RED) {
                 });
             },
             () => {
-                node.log('[' + new Date() + '] - Disconnected from eWeLink WS');
+                console.log('[' + new Date() + '] - Disconnected from eWeLink WS');
                 node.status({
                     fill: 'red',
                     shape: 'ring',
@@ -45,29 +45,29 @@ module.exports = function(RED) {
             },
             (_ws, message) => {
                 data = message.data;
-                node.log('[' + new Date() + '] - eWeLink WS message: ', JSON.stringify(data));
+                console.log('[' + new Date() + '] - eWeLink WS message: ', data);
 
                 // Handle the handcheck response that is indicating that the connection is established
-                if (data !== undefined && JSON.stringify(data)[0] === "{" && data.config !== undefined) {
+                if (data !== undefined && data[0] === "{" && JSON.parse(data).config !== undefined) {
                     node.status({
                         fill: 'green',
                         shape: 'dot',
                         text: 'connected'
                     });
-                    return false;
                 }
 
                 // Handle other messages
                 if (
                     data                                                    // Check that we have a message
-                    && JSON.stringify(data)[0] === '{'                      // Check that it is not a technical message (ping/pong)
+                    && data[0] === '{'                                      // Check that it is not a technical message (ping/pong)
                     && (
                         node.deviceId === ''                                // if there is no deviceId, then send all message
-                        || data.deviceid === node.deviceId                  // if there is a deviceId, send message only if this deviceId correspond to the deviceId of the message
+                        || JSON.parse(data).deviceid === node.deviceId      // if there is a deviceId, send message only if this deviceId correspond to the deviceId of the message
                     )
                 ) {
-                    node.send({payload: data});                              // send the message
+                    node.send({payload: JSON.parse(data)});                 // send the message
                 }
+                
                 return false;
             }
         );
@@ -75,7 +75,7 @@ module.exports = function(RED) {
         node.on('close', function() {
             if (ws) {
                 ws.close();
-                node.log('[' + new Date() + '] - eWeLink WS connection closed');
+                console.log('[' + new Date() + '] - eWeLink WS connection closed');
             }
         });
     }
