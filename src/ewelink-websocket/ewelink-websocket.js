@@ -54,6 +54,7 @@ module.exports = function(RED) {
                         shape: 'dot',
                         text: 'connected'
                     });
+                    return false;
                 }
 
                 // Handle other messages
