@@ -18,6 +18,10 @@ module.exports = function(RED) {
         this.getClient = function () {
             return ewelinkUtil.genericGetClient(this.credentials);
         }
+
+        this.getWebsocketClient = function () {
+            return ewelinkUtil.getWssClient(this.credentials);
+        }
     }
         
     RED.nodes.registerType("ewelink-auth",EwelinkAuth,{
@@ -120,7 +124,7 @@ module.exports = function(RED) {
         credentials.region = req.query.region;
         credentials.displayName = 'tmp';
 
-        const client = ewelinkUtil.genericGetClient(credentials);
+        const client = ewelinkUtil.genericGetClient(credentials).clientApi;
 
         delete credentials.displayName;
 

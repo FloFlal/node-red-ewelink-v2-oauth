@@ -1,6 +1,6 @@
 [
     {
-        "id": "b41a042bf7f032a8",
+        "id": "t0",
         "type": "tab",
         "label": "Example Flow",
         "disabled": false,
@@ -8,23 +8,23 @@
         "env": []
     },
     {
-        "id": "25b1fa15a41fa7f0",
+        "id": "n1",
         "type": "ewelink-list-devices",
-        "z": "b41a042bf7f032a8",
+        "z": "t0",
         "name": "",
         "auth": "",
         "x": 450,
         "y": 280,
         "wires": [
             [
-                "95cb848c9db9bb0b"
+                "n3"
             ]
         ]
     },
     {
-        "id": "fd4f8209a1b37de1",
+        "id": "n2",
         "type": "inject",
-        "z": "b41a042bf7f032a8",
+        "z": "t0",
         "name": "",
         "props": [
             {
@@ -46,14 +46,14 @@
         "y": 280,
         "wires": [
             [
-                "25b1fa15a41fa7f0"
+                "n1"
             ]
         ]
     },
     {
-        "id": "95cb848c9db9bb0b",
+        "id": "n3",
         "type": "debug",
-        "z": "b41a042bf7f032a8",
+        "z": "t0",
         "name": "debug 43",
         "active": true,
         "tosidebar": true,
@@ -67,39 +67,39 @@
         "wires": []
     },
     {
-        "id": "01ba738faaaa4ad4",
+        "id": "n4",
         "type": "ewelink-status-device",
-        "z": "b41a042bf7f032a8",
+        "z": "t0",
         "name": "",
         "auth": "",
-        "deviceid": "100132f66a",
+        "deviceid": "MyDeviceId",
         "deviceidType": "str",
         "x": 440,
         "y": 400,
         "wires": [
             [
-                "95cb848c9db9bb0b"
+                "n3"
             ]
         ]
     },
     {
-        "id": "97b30736261f4c85",
+        "id": "n5",
         "type": "ewelink-home",
-        "z": "b41a042bf7f032a8",
+        "z": "t0",
         "name": "",
         "auth": "",
         "x": 450,
         "y": 200,
         "wires": [
             [
-                "95cb848c9db9bb0b"
+                "n3"
             ]
         ]
     },
     {
-        "id": "2dae96f607f16ec5",
+        "id": "n6",
         "type": "inject",
-        "z": "b41a042bf7f032a8",
+        "z": "t0",
         "name": "",
         "props": [
             {
@@ -121,14 +121,14 @@
         "y": 200,
         "wires": [
             [
-                "97b30736261f4c85"
+                "n5"
             ]
         ]
     },
     {
-        "id": "a1375dfdffd1025a",
+        "id": "n7",
         "type": "inject",
-        "z": "b41a042bf7f032a8",
+        "z": "t0",
         "name": "",
         "props": [
             {
@@ -150,8 +150,63 @@
         "y": 400,
         "wires": [
             [
-                "01ba738faaaa4ad4"
+                "n4"
             ]
         ]
+    },
+    {
+        "id": "075353231032a637",
+        "type": "inject",
+        "z": "t0",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 520,
+        "wires": [
+            [
+                "1d10c984745da1c4"
+            ]
+        ]
+    },
+    {
+        "id": "1d10c984745da1c4",
+        "type": "ewelink-set-status",
+        "z": "t0",
+        "name": "",
+        "auth": "",
+        "deviceid": "MyDeviceId",
+        "deviceidType": "str",
+        "params": "{\"switches\":[{\"switch\":\"on\",\"outlet\":3}]}",
+        "paramsType": "json",
+        "x": 430,
+        "y": 520,
+        "wires": [
+            [
+                "n3"
+            ]
+        ]
+    },
+    {
+        "id": "c1",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@floflal/node-red-ewelink-v2-oauth": "0.1.0"
+        }
     }
 ]
