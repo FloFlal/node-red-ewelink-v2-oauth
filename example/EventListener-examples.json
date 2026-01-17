@@ -1,0 +1,70 @@
+[   
+    {
+        "id": "t1",
+        "type": "tab",
+        "label": "Example Flow - Event Listener",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "n1",
+        "type": "ewelink-websocket",
+        "z": "t1",
+        "name": "All Events",
+        "auth": "",
+        "deviceid": "",
+        "deviceidType": "str",
+        "apikey": "My-Api-key",
+        "apikeyType": "str",
+        "x": 450,
+        "y": 280,
+        "wires": [
+            [
+                "n2"
+            ]
+        ]
+    },
+    {
+        "id": "n3",
+        "type": "ewelink-websocket",
+        "z": "t1",
+        "name": "One device events",
+        "auth": "",
+        "deviceid": "MyDeviceId",
+        "deviceidType": "str",
+        "apikey": "My-Api-key",
+        "apikeyType": "str",
+        "x": 450,
+        "y": 400,
+        "wires": [
+            [
+                "n2"
+            ]
+        ]
+    },
+    {
+        "id": "n2",
+        "type": "debug",
+        "z": "t1",
+        "name": "Output Debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "c1",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@floflal/node-red-ewelink-v2-oauth": "0.1.0"
+        }
+    }
+]
