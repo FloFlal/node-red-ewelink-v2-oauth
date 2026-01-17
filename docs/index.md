@@ -103,6 +103,22 @@ The Params can be provided directly in the node as a string or as a JSON or from
 
 To have mode information about the format of the params, you can check the 2 libraries documentation (see at the top).
 
+### 3.4. Event Messages
+
+This node enable you to open a direct connection to the eWelink servers in order to receive envent messages from it.
+
+It requires no input.
+
+As output, it will send the messages emitted by eWelink, the format depends on the message type and the device type.
+
+It requires at least a Api Key, it can be retreived by calling any of the other api (Home, Device List, etc.) and is part of the answer in the field "apikey".
+
+If you leave the Device ID setup empty, it will output all the events no matter what (except technical event like the handcheck reponse or the heartbeat messages).
+
+You have the possibility to put your Device ID to automatically filter the output on only one device.
+
+Currently, if there is a disconnection or an error, it will not reconnect automatically. It is one of the future enhancement on this node.
+
 ## 4. Known issues and not yest tested features
 
 ### 4.1. Authentication token renewal
