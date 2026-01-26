@@ -1,6 +1,6 @@
 {
     "name": "@floflal/node-red-ewelink-v2-oauth",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "description": "Node-RED to manage ewelink",
     "repository": {
         "type": "git",
