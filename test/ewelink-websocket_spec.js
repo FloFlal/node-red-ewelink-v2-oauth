@@ -2,6 +2,7 @@ const helper = require("node-red-node-test-helper");
 const websocketNode = require("../src/ewelink-websocket/ewelink-websocket.js");
 const authNode = require("../src/ewelink-auth/ewelink-auth.js");
 const util = require("../src/ewelink-util/ewelink-util.js");
+const wsUtils = require("../src/ewelink-util/ewelink-websocket-utils.js");
 const sinon = require('sinon');
 
 describe('eWeLink Websocket tests', () => {
@@ -45,126 +46,11 @@ describe('eWeLink Websocket tests', () => {
         })
     });
 
-    it('Should handle handcheck: no output message and status connected', done => {
-        const flow = [
-            { id: 'n1', type: 'ewelink-auth' },
-            { id: 'n2', type: 'ewelink-websocket', auth: 'n1', name: 'Devices Node 123', wires: [['n3']], status: {text: ''} },
-    		{ id: 'n3', type: 'helper' }
-        ];
-
-        // override the home.getFamily method of the client
-        const connect = { 
-            onMessage: () => {},
-            create: (options, onConnect, onDisconnect, onError, onMessage) => {
-                this.onMessage = onMessage;
-            },
-            fakeMessage: (msg) => {
-                this.onMessage(this, msg);
-            }
-        };
-        const connectStub = sinon.stub(connect, 'create').callsFake(
-            (options, onConnect, onDisconnect, onError, onMessage) => {
-                this.onMessage = onMessage; 
-
-                return {url: 'ws://testurl'}
-            });
-
-        // override the home value of the clinet
-        const clientWs = { Connect: {}, appId: 'something' };
-        const clientWsStub = sinon.stub(clientWs, "Connect").value(connect);
-
-        // override the creation of the client
-        const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => clientWs);
-        
-        // override the home value of the clinet
-        const client = { at: 'at', region: 'eu', appId: 'something' };
-
-        // override the creation of the client
-        const utilStub2 = sinon.stub(util, 'genericGetClient').callsFake(() => client);
-
-
-        helper.load([authNode, websocketNode], flow, () => {
-            const n3 = helper.getNode('n3');
-            const messageSent = {data:{config: 'config' }};
-            
-            n3.on('intput', msg => {
-                msg.should.not.have.a.property('payload');
-            });
-
-            connect.fakeMessage(messageSent);
-
-            setTimeout(() => {
-                connectStub.restore();
-                clientWsStub.restore();
-                utilStub.restore();
-                utilStub2.restore();
-                done();
-            }, 
-            1000);
-        })
-    });
-
-    it('Should filter not object messages (ping/pong)', done => {
-        const flow = [
-            { id: 'n1', type: 'ewelink-auth' },
-            { id: 'n2', type: 'ewelink-websocket', auth: 'n1', wires:[['n3']], name: 'Devices Node 123', deviceId: '' },
-    		{ id: 'n3', type: 'helper' }
-        ];
-
-        // override the home.getFamily method of the client
-        const connect = { 
-            onMessage: () => {},
-            create: () => {},
-            fakeMessage: (msg) => {
-                this.onMessage(this, msg);
-            }
-        };
-        const connectStub = sinon.stub(connect, 'create').callsFake(
-            (options, onConnect, onDisconnect, onError, onMessage) => {
-                this.onMessage = onMessage; 
-
-                return {url: 'ws://testurl'}
-            });
-
-        // override the home value of the clinet
-        const clientWs = { Connect: {}, appId: 'something' };
-        const clientWsStub = sinon.stub(clientWs, "Connect").value(connect);
-
-        // override the creation of the client
-        const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => clientWs);
-        
-        // override the home value of the clinet
-        const client = { at: 'at', region: 'eu', appId: 'something' };
-
-        // override the creation of the client
-        const utilStub2 = sinon.stub(util, 'genericGetClient').callsFake(() => client);
-
-        helper.load([authNode, websocketNode], flow, () => {
-            const n3 = helper.getNode('n3');
-            const messageSent = 'pong';
-
-            n3.on('input', msg => {
-                msg.should.not.have.a.property('payload');
-            });
-
-            connect.fakeMessage({data: messageSent});
-
-            setTimeout(() => {
-                connectStub.restore();
-                clientWsStub.restore();
-                utilStub.restore();
-                utilStub2.restore();
-                done();
-            }, 1000);
-
-        })
-    });
-
     it('Should send message from WS to the output', done => {
         const flow = [
             { id: 'n1', type: 'ewelink-auth' },
-            { id: 'n2', type: 'ewelink-websocket', auth: 'n1', wires:[['n3']], name: 'Devices Node 123', deviceId: '' },
-    		{ id: 'n3', type: 'helper' }
+            { id: 'n2', type: 'ewelink-websocket', auth: 'n1', name: 'Devices Node 123', wires: [['n3']], status: {text: ''} },
+            { id: 'n3', type: 'helper' }
         ];
 
         // override the home.getFamily method of the client
@@ -185,56 +71,70 @@ describe('eWeLink Websocket tests', () => {
         // override the home value of the clinet
         const clientWs = { Connect: {}, appId: 'something' };
         const clientWsStub = sinon.stub(clientWs, "Connect").value(connect);
-
-        // override the creation of the client
-        const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => clientWs);
         
-        // override the home value of the clinet
-        const client = { at: 'at', region: 'eu', appId: 'something' };
-
         // override the creation of the client
-        const utilStub2 = sinon.stub(util, 'genericGetClient').callsFake(() => client);
+        const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => {
+            return clientWs;
+        });
+
+        const wsUtilsStub = sinon.stub(wsUtils, 'addNode').callsFake((node, callback) => {
+            wsUtils.nodeList.set(node.id, {node: node, callback: callback});
+            wsUtils.ws = clientWs;
+            wsUtils.ws.Connect.create({}, () => {}, () => {}, () => {}, (ws_, msg) => {
+                callback(msg);
+            })
+            wsUtils.isConnected = true;
+        });
 
         helper.load([authNode, websocketNode], flow, () => {
             const n3 = helper.getNode('n3');
             const messageSent = { test: 'data' };
 
+            let nbMessageReceived = 0;
+
             n3.on('input', msg => {
                 msg.should.have.a.property('payload');
-				msg.should.have.property('payload', messageSent);
-                
+                msg.should.have.property('payload', messageSent);
+
+                nbMessageReceived++;
+            });
+
+            setTimeout(() => {
                 connectStub.restore();
                 clientWsStub.restore();
                 utilStub.restore();
-                utilStub2.restore();
+                wsUtilsStub.restore();
+
+                if (nbMessageReceived === 0) {
+                    throw new Error("Should send the message on the output");
+                }
                 done();
-            });
+            }, 1500)
 
             connect.fakeMessage({data: JSON.stringify(messageSent)});
-
-        })
+        });
     });
-
+   
     
 
-    it('Should handle disconnection', done => {
+    it('Should filter message on the device id', done => {
         const flow = [
             { id: 'n1', type: 'ewelink-auth' },
-            { id: 'n2', type: 'ewelink-websocket', auth: 'n1', wires:[['n3']], name: 'Devices Node 123', deviceId: '' },
-    		{ id: 'n3', type: 'helper' }
+            { id: 'n2', type: 'ewelink-websocket', auth: 'n1', name: 'Devices Node 123', deviceId: '123456789', wires: [['n3']], status: {text: ''} },
+            { id: 'n3', type: 'helper' }
         ];
 
         // override the home.getFamily method of the client
         const connect = { 
-            onDisconnect: () => {},
+            onMessage: () => {},
             create: () => {},
-            disconnect: () => {
-                this.onDisconnect();
+            fakeMessage: (msg) => {
+                this.onMessage(this, msg);
             }
         };
         const connectStub = sinon.stub(connect, 'create').callsFake(
             (options, onConnect, onDisconnect, onError, onMessage) => {
-                this.onDisconnect = onDisconnect; 
+                this.onMessage = onMessage; 
 
                 return {url: 'ws://testurl'}
             });
@@ -242,150 +142,51 @@ describe('eWeLink Websocket tests', () => {
         // override the home value of the clinet
         const clientWs = { Connect: {}, appId: 'something' };
         const clientWsStub = sinon.stub(clientWs, "Connect").value(connect);
-
-        // override the creation of the client
-        const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => clientWs);
         
-        // override the home value of the clinet
-        const client = { at: 'at', region: 'eu', appId: 'something' };
-
         // override the creation of the client
-        const utilStub2 = sinon.stub(util, 'genericGetClient').callsFake(() => client);
+        const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => {
+            return clientWs;
+        });
+
+        const wsUtilsStub = sinon.stub(wsUtils, 'addNode').callsFake((node, callback) => {
+            wsUtils.nodeList.set(node.id, {node: node, callback: callback});
+            wsUtils.ws = clientWs;
+            wsUtils.ws.Connect.create({}, () => {}, () => {}, () => {}, (ws_, msg) => {
+                callback(msg);
+            })
+            wsUtils.isConnected = true;
+        });
 
         helper.load([authNode, websocketNode], flow, () => {
             const n3 = helper.getNode('n3');
+            const messageSent = { test: 'data', deviceId: '123456789' };
+
+            let nbMessageReceived = 0;
 
             n3.on('input', msg => {
-                msg.should.not.have.a.property('payload');
-            });
+                msg.should.have.a.property('payload');
+                msg.should.have.property('payload', messageSent);
 
-            connect.disconnect();
+                nbMessageReceived++;
+            });
 
             setTimeout(() => {
                 connectStub.restore();
                 clientWsStub.restore();
                 utilStub.restore();
-                utilStub2.restore();
+                wsUtilsStub.restore();
+
+                if (nbMessageReceived !== 1) {
+                    throw new Error("Should send message only for the matching device id, sent " + nbMessageReceived + " message(s)");
+                }
                 done();
-            }, 1000);
+            }, 1500)
 
-        })
-    });
-
-    
-    it('Should handle connect', done => {
-        const flow = [
-            { id: 'n1', type: 'ewelink-auth' },
-            { id: 'n2', type: 'ewelink-websocket', auth: 'n1', wires:[['n3']], name: 'Devices Node 123', deviceId: '' },
-    		{ id: 'n3', type: 'helper' }
-        ];
-
-        // override the home.getFamily method of the client
-        const connect = { 
-            onError: () => {},
-            create: () => {},
-            connect: () => {
-                this.onConnect(this);
-            }
-        };
-        const connectStub = sinon.stub(connect, 'create').callsFake(
-            (options, onConnect, onDisconnect, onError, onMessage) => {
-                this.onConnect = onConnect; 
-                this.url = 'ws://testurl';
-                return this;
-            });
-
-        // override the home value of the clinet
-        const clientWs = { Connect: {}, appId: 'something' };
-        const clientWsStub = sinon.stub(clientWs, "Connect").value(connect);
-
-        // override the creation of the client
-        const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => clientWs);
-        
-        // override the home value of the clinet
-        const client = { at: 'at', region: 'eu', appId: 'something' };
-
-        // override the creation of the client
-        const utilStub2 = sinon.stub(util, 'genericGetClient').callsFake(() => client);
-
-        helper.load([authNode, websocketNode], flow, () => {
-            const n3 = helper.getNode('n3');
-
-            n3.on('input', msg => {
-                msg.should.not.have.a.property('payload');
-            });
-
-            connect.connect();
-
-            setTimeout(() => {
-                connectStub.restore();
-                clientWsStub.restore();
-                utilStub.restore();
-                utilStub2.restore();
-                done();
-            }, 1000);
-
-        })
+            connect.fakeMessage({data: JSON.stringify(messageSent)});
+            
+            messageSent.deviceId = '987654321';
+            connect.fakeMessage({data: JSON.stringify(messageSent)});
+        });
     });
     
-
-    it('Should handle errors', done => {
-        const flow = [
-            { id: 'n1', type: 'ewelink-auth' },
-            { id: 'n2', type: 'ewelink-websocket', auth: 'n1', wires:[['n3']], name: 'Devices Node 123', deviceId: '' },
-    		{ id: 'n3', type: 'helper' }
-        ];
-
-        // override the home.getFamily method of the client
-        const connect = { 
-            onError: () => {},
-            create: () => {},
-            error: (err) => {
-                this.onError(err);
-            }
-        };
-        const connectStub = sinon.stub(connect, 'create').callsFake(
-            (options, onConnect, onDisconnect, onError, onMessage) => {
-                this.onError = onError; 
-
-                return {url: 'ws://testurl'}
-            });
-
-        // override the home value of the clinet
-        const clientWs = { Connect: {}, appId: 'something' };
-        const clientWsStub = sinon.stub(clientWs, "Connect").value(connect);
-
-        // override the creation of the client
-        const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => clientWs);
-        
-        // override the home value of the clinet
-        const client = { at: 'at', region: 'eu', appId: 'something' };
-
-        // override the creation of the client
-        const utilStub2 = sinon.stub(util, 'genericGetClient').callsFake(() => client);
-
-        helper.load([authNode, websocketNode], flow, () => {
-            const n2 = helper.getNode('n2');
-            const n3 = helper.getNode('n3');
-
-            n3.on('input', msg => {
-                msg.should.not.have.a.property('payload');
-            });
-
-            connect.error('error');
-
-            n2.on('error', msg => {
-                msg.should.equals('error');
-            });
-
-            setTimeout(() => {
-                connectStub.restore();
-                clientWsStub.restore();
-                utilStub.restore();
-                utilStub2.restore();
-                done();
-            }, 1000);
-
-        })
-    });
 });
