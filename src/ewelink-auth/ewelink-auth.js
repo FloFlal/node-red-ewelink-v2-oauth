@@ -18,6 +18,11 @@ module.exports = function(RED) {
         this.getClient = function () {
             return ewelinkUtil.genericGetClient(this.credentials);
         }
+
+        this.getWebsocketClient = function () {
+            process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+            return ewelinkUtil.getWssClient(this.credentials);
+        }
     }
         
     RED.nodes.registerType("ewelink-auth",EwelinkAuth,{
