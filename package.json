@@ -1,10 +1,13 @@
 {
     "name": "@floflal/node-red-ewelink-v2-oauth",
-    "version": "0.0.3",
+    "version": "0.1.1",
     "description": "Node-RED to manage ewelink",
     "repository": {
         "type": "git",
         "url": "https://github.com/FloFlal/node-red-ewelink-v2-oauth"
+    },
+    "engines": {
+        "node": ">=14.0.0"
     },
     "scripts": {
         "test": "nyc --reporter=html --reporter=text mocha"
@@ -19,12 +22,14 @@
     },
     "license": "MIT",
     "node-red": {
+        "version": ">=2.0.0",
         "nodes": {
             "ewelink-auth": "src/ewelink-auth/ewelink-auth.js",
             "ewelink-list-devices": "src/ewelink-list-devices/ewelink-list-devices.js",
             "ewelink-set-status": "src/ewelink-set-status/ewelink-set-status.js",
             "ewelink-status-device": "src/ewelink-status-device/ewelink-status-device.js",
-            "ewelink-home": "src/ewelink-home/ewelink-home.js"
+            "ewelink-home": "src/ewelink-home/ewelink-home.js",
+            "ewelink-websocket": "src/ewelink-websocket/ewelink-websocket.js"
         }
     },
     "dependencies": {
@@ -40,7 +45,7 @@
         "mocha": "^6.2.2",
         "mocha-lcov-reporter": "^1.3.0",
         "node-red": "^1.0.3",
-        "node-red-node-test-helper": "^0.2.3",
+        "node-red-node-test-helper": "^0.3.0",
         "nyc": "^14.1.1",
         "sinon": "^7.5.0"
     }
