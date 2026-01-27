@@ -1,6 +1,7 @@
  
 
 module.exports = {
+    wsClient: null,
 
     handlePromiseCall(callPromise, msg, send) {
         callPromise.then(resp => {
@@ -66,13 +67,18 @@ module.exports = {
 	},
 
     getWssClient(credentials) {
+        console.log('Get WS client');
         const ewelinkApi = require('ewelink-api-next').default;
 
-        return new ewelinkApi.Ws({
-            appId: credentials.appId,
-            appSecret: credentials.appSecret,
-            region: credentials.region
-        });
+        if (this.wsClient || this.wsClient === null) {
+            this.wsClient = new ewelinkApi.Ws({
+                appId: credentials.appId,
+                appSecret: credentials.appSecret,
+                region: credentials.region
+            });
+        }
+
+        return this.wsClient;
     },
     
     getBasicClient(credentials) {

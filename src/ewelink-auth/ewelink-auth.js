@@ -20,6 +20,7 @@ module.exports = function(RED) {
         }
 
         this.getWebsocketClient = function () {
+            process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
             return ewelinkUtil.getWssClient(this.credentials);
         }
     }
@@ -124,7 +125,7 @@ module.exports = function(RED) {
         credentials.region = req.query.region;
         credentials.displayName = 'tmp';
 
-        const client = ewelinkUtil.genericGetClient(credentials).clientApi;
+        const client = ewelinkUtil.genericGetClient(credentials);
 
         delete credentials.displayName;
 
