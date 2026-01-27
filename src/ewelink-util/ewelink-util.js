@@ -1,4 +1,8 @@
+ 
+
 module.exports = {
+    wsClient: null,
+
     handlePromiseCall(callPromise, msg, send) {
         callPromise.then(resp => {
             if(resp.error === 0) {
@@ -19,7 +23,7 @@ module.exports = {
 
 	handleEwelinkResponse(RED, nodeAuth, msg, send, callback) {
 		const client = nodeAuth.getClient();
-
+        
         if(client && client.appId) {
 
             const currentTime = (new Date()).getTime();
@@ -28,23 +32,20 @@ module.exports = {
                 // it is time to renew at and rt
                 client.user.refreshToken({rt: client.rt}).then(resp => {
                     if(resp.error === 0) {
-                        nodeAuth.credentials.at = resp.data.accessToken;
-                        nodeAuth.credentials.rt = resp.data.refreshToken;
-                        if (resp.data.atExpiredTime) {
-                            nodeAuth.credentials.atExpiredTime = resp.data.atExpiredTime;
-                        } else {
-                            nodeAuth.credentials.atExpiredTime = currentTime + (24*60*60*1000*29);
-                        }
-                        if (resp.data.rtExpiredTime) {
-                            nodeAuth.credentials.rtExpiredTime = resp.data.rtExpiredTime;
-                        } else {
-                            nodeAuth.credentials.rtExpiredTime = currentTime + (24*60*60*1000*59);
-                        }
+                        // save access token and refresh token in the node credentials
+                        nodeAuth.credentials.at = resp.data.at;
+                        nodeAuth.credentials.rt = resp.data.rt;
+
+                        // if we have expriation time save it, otherwise set to 30 days for at and 60 days for rt
+                        nodeAuth.credentials.atExpiredTime = resp.data?.atExpiredTime || currentTime + (24*60*60*1000*29);
+                        nodeAuth.credentials.rtExpiredTime = resp.data.rtExpiredTime || currentTime + (24*60*60*1000*59);
 
                         RED.nodes.addCredentials(nodeAuth.id, nodeAuth.credentials);
+
                         client.at = nodeAuth.credentials.at;
                         client.rt = nodeAuth.credentials.rt;
                         client.atExpiredTime = nodeAuth.credentials.atExpiredTime;
+
                         const callPromise = callback(client);
                         this.handlePromiseCall(callPromise, msg, send);
                     } else {
@@ -65,6 +66,21 @@ module.exports = {
         }
 	},
 
+    getWssClient(credentials) {
+        console.log('Get WS client');
+        const ewelinkApi = require('ewelink-api-next').default;
+
+        if (this.wsClient || this.wsClient === null) {
+            this.wsClient = new ewelinkApi.Ws({
+                appId: credentials.appId,
+                appSecret: credentials.appSecret,
+                region: credentials.region
+            });
+        }
+
+        return this.wsClient;
+    },
+    
     getBasicClient(credentials) {
         const ewelinkApi = require('ewelink-api-next').default;
 
