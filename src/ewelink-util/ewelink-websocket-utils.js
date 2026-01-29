@@ -1,6 +1,7 @@
 module.exports = {
     isConnected: false,
     isConnecting: false,
+    currentStatus: {color: "yellow", shape: "ring", text: "connecting"},
     nodeList: new Map(),
     ws: null,
 
@@ -10,6 +11,8 @@ module.exports = {
 
         if (!this.isConnected && !this.isConnecting) {
             this.connect(node);
+        } else {
+            this.updateCurrentNodeStatus(node);
         }
     },
     
@@ -18,14 +21,18 @@ module.exports = {
         this.nodeList.delete(node.id);
     },
 
-    updateNodesStatus (color, shapre, text) {
+    updateCurrentNodeStatus (node) {
+        node.status({
+            fill: this.currentStatus.color,
+            shape: this.currentStatus.shape,
+            text: this.currentStatus.text
+        });
+    },
+
+    updateNodesStatus () {
         console.log('[' + new Date() + '] - eWeLink WS update status for all ' + this.nodeList.size + ' nodes');
         this.nodeList.forEach((value, nodeId) => {
-            value.node.status({
-                fill: color,
-                shape: shapre,
-                text: text
-            });
+            this.updateCurrentNodeStatus(value.node);
         });
     },
 
@@ -39,23 +46,25 @@ module.exports = {
                 userApiKey: node.apiKey
             },
             (_ws) => {
-                ws = _ws;
                 this.isConnecting = true;
                 this.isConnected = false;
-                console.log('[' + new Date() + '] - Connected to eWeLink WS: ' + ws.url);
-                this.updateNodesStatus('yellow', 'ring', 'connecting');
+                console.log('[' + new Date() + '] - Connecting to eWeLink WS: ' + this.ws.url);
+                this.currentStatus = {color: "yellow", shape: "ring", text: "connecting"};
+                this.updateNodesStatus();
             },
             () => {
                 this.isConnecting = false;
                 this.isConnected = false;
                 console.log('[' + new Date() + '] - Disconnected from eWeLink WS');
-                this.updateNodesStatus('red', 'ring', 'disconnected');
+                this.currentStatus = {color: "red", shape: "ring", text: "disconnected"};
+                this.updateNodesStatus();
             },
             (error) => {
                 this.isConnecting = false;
                 this.isConnected = false;
                 node.error('[' + new Date() + '] - eWeLink WS connection error: ', error);
-                this.updateNodesStatus('red', 'dot', 'on error');
+                this.currentStatus = {color: "red", shape: "dot", text: "on error"};
+                this.updateNodesStatus();
                 this.ws.close();
             },
             (_ws, message) => {
@@ -66,7 +75,9 @@ module.exports = {
                 if (data !== undefined && data[0] === "{" && JSON.parse(data).config !== undefined) {    
                     this.isConnecting = false;
                     this.isConnected = true;
-                    this.updateNodesStatus('green', 'dot', 'connected');
+                    console.log('[' + new Date() + '] - Connected to eWeLink WS: ' + this.ws.url);
+                    this.currentStatus = {color: "green", shape: "dot", text: "connected"};
+                    this.updateNodesStatus();
                     return false;
                 }
 

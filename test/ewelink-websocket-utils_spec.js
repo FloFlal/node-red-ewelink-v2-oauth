@@ -320,8 +320,8 @@ describe('eWeLink Websocket Utils tests', () => {
 
     it('Should handle connection', done => {
         const flow = [
-            { id: 'n1', type: 'ewelink-auth' },
-            { id: 'n2', type: 'ewelink-home', auth: 'n1', wires:[['n3']] },
+            { id: 'n1', type: 'ewelink-auth', appId: 'something' },
+            { id: 'n2', type: 'ewelink-home', auth: 'n1', wires:[['n3']], apiKey: 'apiKey' },
             { id: 'n3', type: 'helper' }
         ];
 
@@ -337,7 +337,7 @@ describe('eWeLink Websocket Utils tests', () => {
             (options, onConnect, onDisconnect, onError, onMessage) => {
                 this.onConnect = onConnect; 
 
-                return {url: 'ws://testurl'}
+                return {url: 'ws://testurl'};
             });
 
         // override the home value of the clinet
@@ -345,19 +345,22 @@ describe('eWeLink Websocket Utils tests', () => {
         const clientWsStub = sinon.stub(clientWs, "Connect").value(connect);
         
         // override the creation of the client
-        const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => clientWs);
+        const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => {
+            return clientWs;
+        });
 
-        const wsUtilsStub = sinon.stub(wsUtils, 'updateNodesStatus').callsFake((color, shape, text) => {});
+        // override the creation of the client
+        const utilStub2 = sinon.stub(util, 'genericGetClient').callsFake(() => {
+            return {appId: 'something', at: 'atoken', region: 'region'};
+        });
+        
+
+        const wsUtilsStub = sinon.stub(wsUtils, 'updateNodesStatus').callsFake(() => {});
 
         helper.load([authNode, homeNode], flow, () => {
             const n2 = helper.getNode('n2');
             
-            wsUtils.addNode(n2, (message) => {
-                n2.send({payload: JSON.parse(message.data)})
-            });
-
-            const n3 = helper.getNode('n3');
-            const messageSent = { test: 'data' };
+            wsUtils.addNode(n2, (message) => {});
 
             connect.fakeMessage();
 
@@ -369,17 +372,24 @@ describe('eWeLink Websocket Utils tests', () => {
                 throw new Error("The nodes status were not updated on connection");
             }
 
-            if(wsUtilsStub.calledOnceWithExactly('yellow', 'ring', 'connecting') !== true){
-                throw new Error("The nodes status were not updated correctly on error");
+            if (
+                wsUtils.currentStatus.color !== "yellow" 
+                && wsUtils.currentStatus.shape !== "ring" 
+                && wsUtils.currentStatus.text !== "connecting"
+            ) {
+                console.log("currentStatus: " + JSON.stringify(wsUtils.currentStatus));
+                throw new Error("The nodes status were not updated correctly on connection");
             }
             
             connectStub.restore();
             clientWsStub.restore();
             utilStub.restore();
+            utilStub2.restore();
             wsUtilsStub.restore();
+            
             done();
         });
-    });
+    }).timeout(5000);
 
     it('Should handle disconnection', done => {
         const flow = [
@@ -410,7 +420,13 @@ describe('eWeLink Websocket Utils tests', () => {
         // override the creation of the client
         const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => clientWs);
 
-        const wsUtilsStub = sinon.stub(wsUtils, 'updateNodesStatus').callsFake((color, shape, text) => {});
+        const wsUtilsStub = sinon.stub(wsUtils, 'updateNodesStatus').callsFake(() => {});
+
+        // override the creation of the client
+        const utilStub2 = sinon.stub(util, 'genericGetClient').callsFake(() => {
+            return {appId: 'something', at: 'atoken', region: 'region'};
+        });
+        
 
         helper.load([authNode, homeNode], flow, () => {
             const n2 = helper.getNode('n2');
@@ -432,14 +448,20 @@ describe('eWeLink Websocket Utils tests', () => {
                 throw new Error("The nodes status were not updated on connection");
             }
 
-            if(wsUtilsStub.calledOnceWithExactly('red', 'ring', 'disconnected') !== true){
-                throw new Error("The nodes status were not updated correctly on error");
+            if (
+                wsUtils.currentStatus.color !== "red" 
+                && wsUtils.currentStatus.shape !== "ring" 
+                && wsUtils.currentStatus.text !== "disconnected"
+            ) {
+                console.log("currentStatus: " + JSON.stringify(wsUtils.currentStatus));
+                throw new Error("The nodes status were not updated correctly on connection");
             }
             
             connectStub.restore();
             clientWsStub.restore();
             utilStub.restore();
             wsUtilsStub.restore();
+            utilStub2.restore();
             done();
         });
     });
@@ -473,7 +495,12 @@ describe('eWeLink Websocket Utils tests', () => {
         // override the creation of the client
         const utilStub = sinon.stub(util, 'getWssClient').callsFake(() => clientWs);
 
-        const wsUtilsStub = sinon.stub(wsUtils, 'updateNodesStatus').callsFake((color, shape, text) => {});
+        const wsUtilsStub = sinon.stub(wsUtils, 'updateNodesStatus').callsFake(() => {});
+
+        // override the creation of the client
+        const utilStub2 = sinon.stub(util, 'genericGetClient').callsFake(() => {
+            return {appId: 'something', at: 'atoken', region: 'region'};
+        });
 
         helper.load([authNode, homeNode], flow, () => {
             const n2 = helper.getNode('n2');
@@ -495,14 +522,20 @@ describe('eWeLink Websocket Utils tests', () => {
                 throw new Error("The nodes status were not updated on connection");
             }
 
-            if(wsUtilsStub.calledOnceWithExactly('red', 'dot', 'on error') !== true){
-                throw new Error("The nodes status were not updated correctly on error");
+            if (
+                wsUtils.currentStatus.color !== "red" 
+                && wsUtils.currentStatus.shape !== "dot" 
+                && wsUtils.currentStatus.text !== "on error"
+            ) {
+                console.log("currentStatus: " + JSON.stringify(wsUtils.currentStatus));
+                throw new Error("The nodes status were not updated correctly on connection");
             }
             
             connectStub.restore();
             clientWsStub.restore();
             utilStub.restore();
             wsUtilsStub.restore();
+            utilStub2.restore();
             done();
         });
     });

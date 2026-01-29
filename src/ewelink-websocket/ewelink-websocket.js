@@ -10,6 +10,12 @@ module.exports = function(RED) {
 
         var node = this;
 
+        node.status({
+            fill: "yellow",
+            shape: "ring",
+            text: "connecting"
+        });
+
         ewelinkWebsocketUtil.addNode(node, (message) => {
                 data = message.data;
                 
